@@ -1,0 +1,82 @@
+from sklearn.feature_extraction.text import CountVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+
+def compute_ats_score(resume_text):
+    # Industry-specific keywords (example)
+    industry_keywords = [
+        "data science", "machine learning", "deep learning", "python", "R", "SQL", 
+        "data analysis", "predictive modeling", "data visualization", "AWS", 
+        "cloud computing", "big data", "neural networks", "data mining", 
+        "hadoop", "spark", "tableau", "power bi", "machine learning models"
+    ]
+    
+    # Preprocess the resume text and keywords into a bag-of-words model
+    documents = [resume_text] + industry_keywords  # Adding resume text to keyword list
+    
+    # Create CountVectorizer object and transform the documents to bag-of-words representation
+    vectorizer = CountVectorizer(stop_words='english')
+    word_matrix = vectorizer.fit_transform(documents)
+    
+    # Calculate cosine similarity between resume text and the keywords
+    similarity_score = cosine_similarity(word_matrix[0:1], word_matrix[1:]).flatten()
+    
+    # Define threshold for similarity score to consider a match
+    threshold = 0.2  # Adjust this value if needed
+    
+    # Find matching keywords based on similarity score above threshold
+    matched_keywords = [industry_keywords[i] for i in range(len(similarity_score)) if similarity_score[i] > threshold]
+    
+    # Calculate ATS score (percentage of matched keywords)
+    ats_score = (len(matched_keywords) / len(industry_keywords)) * 10
+    
+    return ats_score, matched_keywords
+
+# Example usage
+resume_text = """
+John Doe
+Email: johndoe@example.com | Phone: (123) 456-7890 | LinkedIn: linkedin.com/in/johndoe
+
+Summary
+Results-driven Data Scientist with 5+ years of experience in machine learning, data analysis, and predictive modeling. Proficient in Python, SQL, and data visualization tools like Tableau. Passionate about applying data-driven solutions to solve business problems. Strong problem-solving skills with the ability to communicate technical concepts to non-technical stakeholders.
+
+Skills
+- Programming Languages: Python, R, SQL
+- Machine Learning: Regression, Classification, Clustering, Neural Networks
+- Data Visualization: Tableau, Power BI, Matplotlib, Seaborn
+- Big Data Technologies: Hadoop, Spark
+- Tools: Jupyter, Git, Docker
+- Database Management: MySQL, PostgreSQL, MongoDB
+- Cloud Platforms: AWS, Google Cloud, Azure
+- Soft Skills: Communication, Problem-Solving, Collaboration
+
+Experience
+Data Scientist
+XYZ Corp, New York, NY | March 2021 – Present
+- Developed machine learning models for predictive analytics, improving sales forecasting by 25%.
+- Led data analysis projects utilizing Python, Pandas, and NumPy, resulting in actionable insights for marketing strategies.
+- Built interactive dashboards in Tableau, enabling the marketing team to make data-driven decisions.
+- Worked with cross-functional teams to deploy machine learning models using AWS.
+
+Data Analyst
+ABC Inc, Los Angeles, CA | June 2018 – February 2021
+- Cleaned, processed, and analyzed large datasets using SQL and Python to support business operations.
+- Performed exploratory data analysis (EDA) to identify trends and insights in customer behavior.
+- Automated reports, reducing reporting time by 30% through scripting in Python.
+- Developed predictive models to optimize inventory management and reduce costs by 15%.
+
+Education
+Master of Science in Data Science
+University of California, Los Angeles, CA | 2018
+
+Bachelor of Science in Computer Science
+University of California, Berkeley, CA | 2016
+
+Certifications
+- Certified Data Scientist – Data Science Council of America (DASCA)
+- Machine Learning Specialist – Coursera (Stanford University)
+- AWS Certified Solutions Architect – Amazon Web Services
+"""
+
+ats_score, matched_keywords = compute_ats_score(resume_text)
+print("ATS Score:", ats_score)
+print("Matched Keywords:", matched_keywords)
