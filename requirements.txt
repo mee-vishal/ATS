@@ -1,6 +1,3 @@
-pip install cryptography --no-binary cryptography
-psycopg2-binary
-pip install --upgrade pip && pip install -r requirements.txt
 annotated-types==0.7.0
 anyio==4.7.0
 argon2-cffi==23.1.0
